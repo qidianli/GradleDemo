@@ -16,7 +16,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
 
         }
 
@@ -25,7 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 
 
 //    productFlavors{
@@ -51,19 +50,26 @@ def testImplementationLibMap = testImplementationLib
 def androidTestImplementationLibMap = androidTestImplementationLib
 
 dependencies {
-    implementationLibMap.each{k,v ->
+    implementationLibMap.each { k, v ->
         implementation v
     }
 
-    testImplementationLibMap.each{k,v ->
+    testImplementationLibMap.each { k, v ->
         testImplementation v
     }
 
-    androidTestImplementationLibMap.each{k,v ->
+    androidTestImplementationLibMap.each { k, v ->
         androidTestImplementation v
     }
+
+
+//    implementation 'com.github.qidianli:GradleDemo:1.0.0'
+
 }
 
+ext.test3 = '33333333'
+
+println(test3)
 /**============================================== Gradle 系列 （二）、Gradle 技术探索 start =============================================================*/
 //======================================= Project 常用 API start=====================================
 /**
@@ -116,19 +122,22 @@ dependencies {
  * 1、file 方法应用
  */
 //1、通过 file 方法传入一个相对路径，返回值是一个 file 对象
-//println file('../config.gradle').text
+//println file('../app/test.gradle').text
 
 //2、通过 new File 方式传入一个绝对路径
 //def file = new File('/Users/zhouying/learning/GradleDemo/config.gradle')
-//println file.text
+//def file = new File('/GradleDemo/config.gradle')
+//println '输出：'+file.text
 
 
 /**
  * 2、files 方法应用
  */
 //通过 files 方法传入多个相对路径，返回值是一个 ConfigurableFileCollection 即文件集合
-//files('../config.gradle','../build.gradle').each {
-//    println it.name
+//files('../test1.gradle','../build.gradle').each {
+//   if(it.name.equals('test1.gradle')){
+//       it.delete()
+//   }
 //}
 //======================================= 文件操作 API end==========================================
 
@@ -162,11 +171,11 @@ dependencies {
 /**
  * 遍历根目录下的 gradle 文件夹，并打印文件及文件夹的名称
  */
-//fileTree('../gradle/'){ FileTree fileTree ->
-//    fileTree.visit { FileTreeElement fileTreeElement ->
-//        println fileTreeElement.name
-//    }
-//}
+fileTree('../gradle/'){ FileTree fileTree ->
+    fileTree.visit { FileTreeElement fileTreeElement ->
+        println 'current=======>'+fileTreeElement.name
+    }
+}
 //======================================= 文件树映射 API end========================================
 
 //======================================= exec 外部命令执行 API start================================
@@ -197,7 +206,7 @@ dependencies {
 /**
  * doFirst,doLast
  */
-//task erdai(dependsOn: erdai1){
+//task erdai{
 //    println 'task start...'
 //
 //    doFirst {
@@ -334,7 +343,7 @@ dependencies {
 //    }
 //}
 //
-//task taskC(dependsOn: taskA){//多依赖方式 dependsOn:[taskA,taskB]
+//task taskC(dependsOn: [taskA,taskB]){//多依赖方式 dependsOn:[taskA,taskB]
 //    doLast {
 //        println 'taskC'
 //    }
@@ -343,7 +352,7 @@ dependencies {
 /**
  * 动态依赖
  */
-//task lib1 {
+//task xlib1 {
 //    doLast{
 //        println 'lib1'
 //    }
@@ -371,7 +380,6 @@ dependencies {
 //    }
 //}
 //======================================= dependsOn 强依赖方式 end====================================================================
-
 
 
 //======================================= 通过 Task 输入输出指定执行顺序 start====================================================================
@@ -428,7 +436,7 @@ dependencies {
 //    }
 //}
 //
-//task taskXY(dependsOn: [taskX,taskY]){
+//task taskXY(dependsOn: [taskY,taskX]){
 //    doLast {
 //        println 'taskXY'
 //    }
@@ -437,28 +445,26 @@ dependencies {
 /**
  * finalizeBy
  */
-//task taskI{
-//    doLast {
-//        println 'taskI'
-//    }
-//}
-//
-//task taskJ{
-//    finalizedBy taskI
-//    doLast {
-//        println 'taskJ'
-//    }
-//}
-//
-//
-//task taskIJ(dependsOn: [taskI,taskJ]){
-//    doLast {
-//        println 'taskIJ'
-//    }
-//}
+task taskI{
+    doLast {
+        println 'taskI'
+    }
+}
+
+task taskJ{
+    finalizedBy taskI
+    doLast {
+        println 'taskJ'
+    }
+}
+
+
+task taskIJ(dependsOn: [taskI,taskJ]){
+    doLast {
+        println 'taskIJ'
+    }
+}
 //======================================= 通过 API 指定执行顺序 end======================================================================
-
-
 
 
 //======================================= 自定义 Task 挂接到 Android 构建流程 start======================================================================
@@ -467,21 +473,21 @@ dependencies {
  * 通过 dependsOn 指定
  * 注意：单独使用 dependsOn ，必须让构建流程中的 Task 依赖我们自定义的 Task，否则我们的 Task 不会生效
  */
-//task myCustomTask{
-//    doLast {
-//        println 'This is myCustomTask'
-//    }
-//}
-//
-//afterEvaluate {
-//    //1、找到需要的构建流程 Task
-//    def mergeDebugResources = tasks.findByName("mergeDebugResources")
-//    //2、通过 dependsOn 指定
-//    mergeDebugResources.dependsOn(myCustomTask)
-//
-//    //如果换成下面这种写法则自定义 Task 不会生效
-//    //myCustomTask.dependsOn(mergeDebugResources)
-//}
+task myCustomTask{
+    doLast {
+        println 'This is myCustomTask'
+    }
+}
+
+afterEvaluate {
+    //1、找到需要的构建流程 Task
+    def mergeDebugResources = tasks.findByName("compileDebugRenderscript")
+    //2、通过 dependsOn 指定
+    mergeDebugResources.dependsOn(myCustomTask)
+
+    //如果换成下面这种写法则自定义 Task 不会生效
+    //myCustomTask.dependsOn(mergeDebugResources)
+}
 
 /**
  * 方式二：
@@ -501,7 +507,7 @@ dependencies {
 
 /**
  * 方式三：
- *通过 mustRunAfter 配合 dependsOn 指定
+ * 通过 mustRunAfter 配合 dependsOn 指定
  */
 //task myCustomTask{
 //    doLast {
@@ -518,7 +524,6 @@ dependencies {
 //}
 //======================================= 自定义 Task 挂接到 Android 构建流程 end========================================================================
 /**============================================== Gradle 系列 （二）、Gradle 技术探索 end =============================================================*/
-
 
 
 /**============================================== Gradle 系列 （三）、Gradle 插件开发 start =============================================================*/
@@ -538,25 +543,25 @@ dependencies {
 /**
  * 在 build.gradle 文件中直接编写
  */
-//apply plugin: Method1Plugin
-//class Method1Plugin implements Plugin<Project> {
-//
-//    @Override
-//    void apply(Project project) {
-//        println 'I am Method1Plugin '
-//
-//        project.task("Method1PluginTask"){
-//            doLast {
-//                println 'Method1PluginTask exec success...'
-//            }
-//        }
-//    }
-//}
+apply plugin: Method1Plugin
+class Method1Plugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        println 'I am Method1Plugin '
+
+        project.task("Method1PluginTask"){
+            doLast {
+                println 'Method1PluginTask exec success...'
+            }
+        }
+    }
+}
 
 /**
  * buildSrc 插件引用
  */
-//apply plugin: 'BuildSrcPlugin'
+apply plugin: 'BuildSrcPlugin'
 
 /**
  * 自定义插件引用
@@ -648,7 +653,6 @@ dependencies {
 //    legs 4
 //}
 //====================================== ExtensionContainer create 系列方法 end ======================================
-
 
 
 //====================================== ExtensionContainer add 系列方法 start ======================================
@@ -892,7 +896,7 @@ dependencies {
 //}
 
 /**
- *遍历打印一下每个构建变体的 name 和 baseName
+ * 遍历打印一下每个构建变体的 name 和 baseName
  */
 //afterEvaluate {
 //    project.android.applicationVariants.all{variant ->
@@ -902,7 +906,7 @@ dependencies {
 //}
 
 /**
- *对 applicationVariants 中的 Task 进行 Hook
+ * 对 applicationVariants 中的 Task 进行 Hook
  */
 //afterEvaluate {
 //    project.android.applicationVariants.all{ variant ->
@@ -914,7 +918,7 @@ dependencies {
 
 
 /**
- *使用 applicationVariants 对 APK 进行重命名
+ * 使用 applicationVariants 对 APK 进行重命名
  */
 //project.android.applicationVariants.all{ variant ->
 //    variant.outputs.all{

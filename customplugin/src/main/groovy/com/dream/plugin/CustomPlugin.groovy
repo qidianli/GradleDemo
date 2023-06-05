@@ -13,7 +13,7 @@ class CustomPlugin implements Plugin<Project>{
         //自定义 Task
         def customTask = project.tasks.create('CustomTask'){
             doLast {
-                println 'Hello, I am CustomTask'
+                println 'Hello, I am CustomTask....'
             }
         }
 

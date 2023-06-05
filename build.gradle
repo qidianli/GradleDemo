@@ -18,9 +18,9 @@ buildscript {
 //        }
 
         //远程 JitPack 仓库地址
-//        maven {
-//            url 'https://jitpack.io'
-//        }
+        maven {
+            url 'https://jitpack.io'
+        }
     }
     dependencies {
         //noinspection AndroidGradlePluginVersion
@@ -31,7 +31,7 @@ buildscript {
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 
         //引入插件依赖
-        //classpath 'com.dream:customplugin:1.0.2'
+//        classpath 'com.dream:customplugin:1.0.0'
 
         //引入插件依赖
 //        classpath 'com.dream:xmlviewscanplugin:1.0.3'
@@ -39,6 +39,7 @@ buildscript {
         //Github 创建的 release: 1.0.0, 1.0.1, 1.0.4 是通过 com.github.dcendents.android-maven 插件上传的
         //引入插件依赖
 //        classpath 'com.github.sweetying520:GradleDemo:1.0.4'
+        classpath 'com.github.qidianli:GradleDemo:1.0.0'
 
         //Github 创建的 release: 1.0.2, 1.0.3 是通过 maven-publish 插件上传的
         //引入插件依赖 使用 maven-publish 插件上传 JitPack 获取的依赖地址，特别长
@@ -74,8 +75,8 @@ task clean(type: Delete) {
  * 6、获取当前 Project 下的所有子 Project 对象，返回值是一个 Set 集合
  */
 //println getSubprojects()
-
-//闭包形式
+//
+////闭包形式
 //subprojects {
 //    println it
 //}
@@ -83,17 +84,18 @@ task clean(type: Delete) {
 /**
  * 9、指定工程实例，然后在闭包中对其进行相关的配置
  */
-//project("app") {
-//    apply plugin: 'com.android.application'
-//}
+project("app") {
+    apply plugin: 'com.android.application'
+    println('hellow')
+}
 //======================================= Project 常用 API end=====================================
 
 //======================================= 扩展属性定义 start============================================
 //方式1：ext.属性名
-//ext.test = 'erdai666'
+ext.test = 'erdai666'
 
 //方式2：ext 后面接上一个闭包
-//ext{
-//    test1 = 'erdai777'
-//}
+ext{
+    test1 = 'erdai777'
+}
 //======================================= 扩展属性定义 end============================================
